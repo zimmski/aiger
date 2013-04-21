@@ -118,7 +118,7 @@ int main(int argc, char ** argv) {
 			aiger_add_output(dst, src->outputs[0].lit, "AIGER_OR");
 		}
 		else {
-			out = src->outputs[0].lit + 1;
+			out = aiger_not (src->outputs[0].lit);
 			for (j = 1; j < src->num_outputs; j++) {
 				tmp = 2 * (dst->maxvar + 1);
 				aiger_add_and(dst, tmp, out, aiger_not (src->outputs[j].lit));
