@@ -288,8 +288,12 @@ run (const char * cmd, const char * name)
 {
   int res;
   char * fullcmd = strdup (cmd);
+  
+  char * name_quoted = malloc (sizeof (char) * (strlen(name) + 2));
+  sprintf(name_quoted, "'%s'", name);
+  
   fullcmd = strapp (fullcmd, " ");
-  fullcmd = strapp (fullcmd, name);
+  fullcmd = strapp (fullcmd, name_quoted);
   fullcmd = strapp (fullcmd, CMDSUFFIX);
   runs++;
   msg (3, "full command '%s'", fullcmd);
