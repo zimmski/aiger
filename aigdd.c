@@ -276,7 +276,7 @@ copy_stable_to_unstable_and_write_dst_name (void)
   write_unstable (dst_name);
 }
 
-#define CMDSUFFIX ""
+#define CMDSUFFIX " 1>/dev/null"
 
 static char *
 strapp (char * str, const char * suffix) {
