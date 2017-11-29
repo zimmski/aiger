@@ -89,16 +89,18 @@ static void wrn (const char *fmt, ...) {
   fflush (stderr);
 }
 
-static void add (int lit) { picosat_add (lit); }
+PicoSAT *solver;
 
-static void assume (int lit) { picosat_assume (lit); }
+static void add (int lit) { picosat_add (solver, lit); }
 
-static int sat () { return picosat_sat (-1); }
+static void assume (int lit) { picosat_assume (solver, lit); }
 
-static int deref (int lit) { return picosat_deref (lit); }
+static int sat () { return picosat_sat (solver, -1); }
+
+static int deref (int lit) { return picosat_deref (solver, lit); }
 
 static void init () {
-  picosat_init ();
+  solver = picosat_init ();
   model = aiger_init ();
 }
 
@@ -120,7 +122,7 @@ static void reset () {
   free (bad);
   free (justice);
   free (join);
-  picosat_reset ();
+  picosat_reset (solver);
   aiger_reset (model);
 }
 
@@ -238,7 +240,7 @@ static int encode () {
 
     res->justice = malloc (model->num_justice * sizeof *res->justice);
     for (i = 0; i < model->num_justice; i++) {
-      res->justice[i].lits = 
+      res->justice[i].lits =
 	malloc (model->justice[i].size * sizeof *res->justice[i].lits);
       for (j = 0; j < model->justice[i].size; j++)
 	res->justice[i].lits[j].lit = import (res, model->justice[i].lits[j]);
@@ -299,7 +301,7 @@ static int encode () {
     }
     if (model->num_fairness > 1) {
       res->allfair = newvar ();
-      for (i = 0; i < model->num_fairness; i++) 
+      for (i = 0; i < model->num_fairness; i++)
 	binary (-res->allfair, res->fairness[i].sat);
     } else res->allfair = res->fairness[0].sat;
 
@@ -348,7 +350,7 @@ int main (int argc, char ** argv) {
     else if (!strcmp (argv[i], "-m")) move = 1;
     else if (argv[i][0] == '-')
       die ("invalid command line option '%s'", argv[i]);
-    else if (name && maxk >= 0) 
+    else if (name && maxk >= 0)
       die ("unexpected argument '%s'", argv[i]);
     else if (name && !isnum (argv[i]))
       die ("expected number got '%s'", argv[i]);
